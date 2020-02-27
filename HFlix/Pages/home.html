@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11">
+    <title>HFlix</title>    
+    
+    <script type="text/javascript" src="../Content/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../Content/angular.min.js"></script>
+    <script type="text/javascript" src="../Content/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    
+
+    <script type="text/javascript" src="../Scripts/config.js"></script>    
+    <script type="text/javascript" src="../Scripts/home.js"></script>
+    <script type="text/javascript" src="../Source/catalog.js"></script>
+    <style>
+        .controls button[data-state="subtitles"] {
+            height: 85%;
+            text-indent: 0;
+            font-size: 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #666;
+            background: #000;
+            border-radius: 2px;
+        }
+    </style>    
+    <link href="../Content/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../Content/bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="../CSS/mvx.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="../Img/h2.png" />
+</head>
+<body ng-app="myApp" ng-controller="myCtrl" style="background-color: #2e2d2d; height: auto">
+    
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="color: black" id="myModalLabel">{{currentTitle}}</h4>                    
+                </div>
+                <div class="modal-body">
+                    <video controls id="video" style="width: 100%; height: auto; margin:0 auto;">
+                        <source ng-src="{{currentMovieMP4}}" type="video/mp4">
+                        <source ng-src="{{currentMovieMKV}}" type="video/mp4">
+                        <track label="Português" kind="captions" srclang="pt-br" ng-src="{{currentPT}}">
+                        <track label="English" kind="subtitles" srclang="en" src="{{currentEN}}">
+                        <track label="Español" kind="captions" srclang="es" ng-src="{{currentES}}">
+                        <track label="Français" kind="subtitles" srclang="fr" src="{{currentFR}}">
+                        <track label="FP" kind="captions" srclang="pt-br" ng-src="{{currentFP}}">
+                        Your browser doesn't support HTML5 video tag.
+                    </video>
+                    <div id="tmdbInfo">
+                        <label style="font-weight: bold; color: red">Title: </label>
+                        <label style="font-style: italic; color: #100e0e">{{tmdb.title}} ({{tmdb.release_date}})</label>
+                        <br />
+                        <label style="font-weight: bold; color: red">IMDB: </label>
+                        <label style="font-style: italic; color: #100e0e">{{tmdb.vote_average}}</label>                        
+                        <br />
+                        <label style="font-weight: bold; color: red">Genres: </label>                        
+                        <label style="font-style: italic; color: #100e0e" ng-repeat="g in tmdb.genres">
+                            <label ng-if="$first">( </label>
+                            <label>{{g.name}}</label>
+                            <label ng-if="!$last">,&nbsp;</label>
+                            <label ng-if="$last"> )</label>
+                        </label>                        
+                        <br />
+                        <label style="font-weight: bold; color: red">Overview: </label>
+                        <label style="font-style: italic; color: #100e0e">{{tmdb.overview}}</label>
+                    </div>s
+                </div>
+                <div class="modal-footer">                                    
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <hermano-flix-title style="color: #b00808"></hermano-flix-title>
+    <form>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                <input type="text" class="form-control" placeholder="Search a Movie" ng-model="searchMovie">
+            </div>
+        </div>
+    </form>    
+    <div>
+        <span style="color: whitesmoke; width:10px">Total Movies: {{filtered.length}}</span>
+    </div>
+    <div>
+        <a href="#" ng-click="sortType = 'folder'; sortReverse = !sortReverse">
+            Sort by Year
+            <span ng-show="sortType == 'folder' && !sortReverse" class="fa fa-caret-down"></span>
+            <span ng-show="sortType == 'folder' && sortReverse" class="fa fa-caret-up"></span>
+        </a>
+    </div>
+    <div  style="float:left" ng-repeat="x in filtered = (catalog | orderBy:sortType:sortReverse | filter:searchMovie)" >
+        <div class="tile" ng-click="changeMovie(x.folder, x.tmdb)" data-toggle="modal" data-target="#myModal">
+            <div class="tile__media">
+                <img class="tile__img" border="0" alt="Movies" ng-src="{{getPoster(x.folder)}}" />
+            </div>
+            <br />
+            <div class="tile__details">
+                <div class="tile__title">
+                    {{x.folder}}
+                </div>
+            </div>
+        </div>
+    </div>    
+</body>
+</html>
